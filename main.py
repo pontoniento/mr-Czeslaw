@@ -5,7 +5,7 @@ from typing import List
 
 # Database
 #DATABASE_URL = "postgresql://postgres:postgres@127.0.0.1:5432/postgres"
-DATABASE_URL = "postgres://oaeoyoimoluuyj:b1ba46392168f0c79ff4b765772f10614e9b7b8b6c294b16d67fbdf4dddfbb35@ec2-34-246-227-219.eu-west-1.compute.amazonaws.com:5432/dajoqb0gnjiddr"
+DATABASE_URL = "postgresql://oaeoyoimoluuyj:b1ba46392168f0c79ff4b765772f10614e9b7b8b6c294b16d67fbdf4dddfbb35@ec2-34-246-227-219.eu-west-1.compute.amazonaws.com:5432/dajoqb0gnjiddr"
 
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
