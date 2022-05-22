@@ -1,1 +1,1 @@
-web: uvicorn main:app --reload
+web: uvicorn main:app --reload --host 178.43.248.138 --port 5432
