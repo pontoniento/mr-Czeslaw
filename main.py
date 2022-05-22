@@ -112,6 +112,12 @@ async def get_all_books_by_aquired_state(aquired: bool):
         where(books.c.aquired == aquired)
     return await database.fetch_all(query)
 
+@app.get("/books/search/{book_id}", response_model=List[BookList])
+async def get_all_books_by_search_parameters(title: str, aquired: bool):
+    query = books.select().\
+        where(books.c.title.like('%' + title + '%')).where(books.c.aquired == aquired)
+    return await database.fetch_all(query)
+
 @app.post("/books", response_model=BookList)
 async def add_book(book: BookEntry):
     gID = str(uuid.uuid1())
