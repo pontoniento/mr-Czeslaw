@@ -1,1 +1,1 @@
-web: uvicorn main:app --reload --port $PORT
+web: gunicorn -w 4 -k uvicorn.workers.UvicornWorkers main:app
