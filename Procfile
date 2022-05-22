@@ -1,1 +1,1 @@
-web: uvicorn main:app --reload --host "mr-czeslaw.herokuapp.com" --port 5432
+web: uvicorn main:app --reload
