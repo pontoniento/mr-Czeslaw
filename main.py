@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from typing import List
 
 # Database
-#DATABASE_URL = "postgresql://postgres:postgres@127.0.0.1:5432/postgres"
+# DATABASE_URL = "postgresql://postgres:postgres@127.0.0.1:5432/postgres"
 DATABASE_URL = "postgresql://oaeoyoimoluuyj:b1ba46392168f0c79ff4b765772f10614e9b7b8b6c294b16d67fbdf4dddfbb35@ec2-34-246-227-219.eu-west-1.compute.amazonaws.com:5432/dajoqb0gnjiddr"
 
 database = databases.Database(DATABASE_URL)
@@ -20,7 +20,7 @@ books = sqlalchemy.Table(
     db.Column("authors", db.String),
     db.Column("published_year", db.Integer),
     db.Column("aquired", db.Boolean),
-    db.Column("thumbnail", db.String)
+    db.Column("thumbnail", db.String),
 )
 
 engine = db.create_engine(DATABASE_URL)
@@ -74,49 +74,61 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
+
 @app.get("/")
 async def home():
     return "Hello Mr.Czesław!"
+
 
 @app.get("/books", response_model=List[BookList])
 async def get_all_books():
     query = books.select()
     return await database.fetch_all(query)
 
+
 @app.get("/books/{book_id}", response_model=BookList)
 async def find_book_by_id(book_id: str):
     query = books.select().where(books.c.id == book_id)
     return await database.fetch_one(query)
 
+
 @app.get("/books/year/{year_range}", response_model=List[BookList])
 async def get_all_books_from_year_range(year_from: int, year_to: int):
-    query = books.select().\
-        where(books.c.published_year >= year_from).where(books.c.published_year <= year_to)
+    query = (
+        books.select()
+        .where(books.c.published_year >= year_from)
+        .where(books.c.published_year <= year_to)
+    )
     return await database.fetch_all(query)
+
 
 @app.get("/books/title/{title}", response_model=List[BookList])
 async def get_all_books_by_title(title: str):
-    query = books.select().\
-        where(books.c.title.like('%' + title + '%'))
+    query = books.select().where(books.c.title.like("%" + title + "%"))
     return await database.fetch_all(query)
+
 
 @app.get("/books/author/{author}", response_model=List[BookList])
 async def get_all_books_by_author(author: str):
-    query = books.select().\
-        where(books.c.title.like('%' + author + '%'))
+    query = books.select().where(books.c.title.like("%" + author + "%"))
     return await database.fetch_all(query)
+
 
 @app.get("/books/aquired/{aquired}", response_model=List[BookList])
 async def get_all_books_by_aquired_state(aquired: bool):
-    query = books.select().\
-        where(books.c.aquired == aquired)
+    query = books.select().where(books.c.aquired == aquired)
     return await database.fetch_all(query)
+
 
 @app.get("/books/search/{book_id}", response_model=List[BookList])
 async def get_all_books_by_search_parameters(title: str, aquired: bool):
-    query = books.select().\
-        where(books.c.title.like('%' + title + '%')).where(books.c.aquired == aquired)
+    query = (
+        books.select()
+        .where(books.c.title.like("%" + title + "%"))
+        .where(books.c.aquired == aquired)
+    )
     return await database.fetch_all(query)
+
 
 @app.post("/books", response_model=BookList)
 async def add_book(book: BookEntry):
@@ -133,27 +145,29 @@ async def add_book(book: BookEntry):
     await database.execute(query)
     return {"id": str(gID), **book.dict()}
 
+
 @app.put("/books", response_model=BookList)
 async def update_book(book: BookUpdate):
-    query = books.update().where(books.c.id == book.id).values(
-        external_id=book.external_id,
-        title=book.title,
-        authors=book.authors,
-        published_year=book.published_year,
-        aquired=book.aquired,
-        thumbnail=book.thumbnail
+    query = (
+        books.update()
+        .where(books.c.id == book.id)
+        .values(
+            external_id=book.external_id,
+            title=book.title,
+            authors=book.authors,
+            published_year=book.published_year,
+            aquired=book.aquired,
+            thumbnail=book.thumbnail,
+        )
     )
 
     await database.execute(query)
     return await find_book_by_id(book.id)
 
+
 @app.delete("/books/{book_id}")
-async def delete_book(book:BookDelete):
+async def delete_book(book: BookDelete):
     query = books.delete().where(books.c.id == book_id)
     await database.execute(query)
 
-    return {
-        "status" : True,
-        "message": "Book has been deleted."
-    }
-
+    return {"status": True, "message": "Book has been deleted."}
