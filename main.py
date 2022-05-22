@@ -72,6 +72,9 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
+@app.get("/")
+async def home():
+    return "Hello Mr.Czesław!"
 
 @app.get("/books", response_model=List[BookList])
 async def get_all_books():
